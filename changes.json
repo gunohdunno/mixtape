@@ -1,0 +1,17 @@
+[
+        {
+            "action":"addPlaylist",
+            "user_id":1,
+            "playlist_id":"4",
+            "song_id":"14"
+        },
+        {
+            "action":"addSong",
+            "playlist_id":"4",
+            "song_id":"10"
+        },
+        {
+            "action":"remove",
+            "playlist_id":"4"
+        }
+]
