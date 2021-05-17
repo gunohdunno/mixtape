@@ -7,8 +7,8 @@ def main(argv):
     global userDict
     global playlistDict
     # load json data from mixtape and changes files
-    if len(argv) == 0:
-        raise Exception("mixtape and changes files required")
+    if len(argv) < 2:
+        raise Exception("mixtape and changes files required as command-line arguments")
     
     with open(argv[0], "r") as f:
         mixtapeJSON = json.load(f)
@@ -35,9 +35,9 @@ def addPlaylist(playlist_id, user_id, song_id):
     if playlist_id in playlistDict:
         raise Exception("Playlist ID: " + playlist_id + " does already exists")
     if user_id not in userDict:
-        raise Exception("user ID: " + user_id + " not found")
+        raise Exception("User ID: " + user_id + " not found")
     if song_id not in songDict:
-        raise Exception("song ID: " + song_id + " not found")
+        raise Exception("Song ID: " + song_id + " not found")
     
     # new playlist is being added
     newPlayList = {}
@@ -50,6 +50,8 @@ def addSongToPlaylist(playlist_id, song_id):
     # find playlist and append new song 
     if playlist_id not in playlistDict:
         raise Exception("Playlist ID: " + playlist_id + " does not exist")
+    if song_id not in songDict:
+        raise Exception("Song ID: " + song_id + " not found")
     
     playlistDict[playlist_id]["song_ids"].append(song_id)
 
