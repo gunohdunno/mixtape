@@ -1,3 +1,4 @@
+from os import error
 import sys
 import json
 import collections
@@ -23,21 +24,26 @@ def main(argv):
 
     # apply changes to mixtape_json
     for change in changesJSON:
-        applyChange(change)
+        changeError = applyChange(change)
+        if changeError != "":
+            print(changeError)
 
     # dump data back into output.json 
     mixtapeJSON["playlists"] = playlistDict.values()
     with open("output.json", "w") as outfile:
         json.dump(mixtapeJSON, outfile)
 
+'''
+Adds a playlist to the mixtape
+'''
 def addPlaylist(playlist_id, user_id, song_id):
     # check for duplicate ids
     if playlist_id in playlistDict:
-        raise Exception("Playlist ID: " + playlist_id + " does already exists")
+        return "Playlist ID: " + playlist_id + " already exists"
     if user_id not in userDict:
-        raise Exception("User ID: " + user_id + " not found")
+        return "User ID: " + user_id + " not found"
     if song_id not in songDict:
-        raise Exception("Song ID: " + song_id + " not found")
+        return "Song ID: " + song_id + " not found"
     
     # new playlist is being added
     newPlayList = {}
@@ -46,32 +52,47 @@ def addPlaylist(playlist_id, user_id, song_id):
     newPlayList["song_ids"] = [song_id]
     playlistDict[playlist_id] = newPlayList
 
+'''
+Adds an existing song to an existing playlist
+'''
 def addSongToPlaylist(playlist_id, song_id):
     # find playlist and append new song 
     if playlist_id not in playlistDict:
-        raise Exception("Playlist ID: " + playlist_id + " does not exist")
+        return "Playlist ID: " + playlist_id + " does not exist"
     if song_id not in songDict:
-        raise Exception("Song ID: " + song_id + " not found")
+        return "Song ID: " + song_id + " not found"
     
     playlistDict[playlist_id]["song_ids"].append(song_id)
 
+'''
+Removes an existing playlist
+'''
 def removePlaylist(playlist_id):
     if playlist_id not in playlistDict:
-        raise Exception("Playlist ID: " + playlist_id + " does not exist")
+        return "Playlist ID: " + playlist_id + " does not exist"
     
     del playlistDict[playlist_id]
 
 ### Helper functions
-# check which type of action is being performed on the mixtape and call proper functions accordingly
+'''
+Consolidates all three functions and calls the correct one per change
+'''
 def applyChange(change):
+    errorMessage = ""
     action = change["action"]
     if action == "addPlaylist":
-        addPlaylist(change["playlist_id"], change["user_id"], change["song_id"])
+        errorMessage = addPlaylist(change["playlist_id"], change["user_id"], change["song_id"])
     elif action == "addSong":
-        addSongToPlaylist(change["playlist_id"], change["song_id"])
+        errorMessage = addSongToPlaylist(change["playlist_id"], change["song_id"])
     elif action == "remove":
-        removePlaylist(change["playlist_id"])
+        errorMessage = removePlaylist(change["playlist_id"])
+    if errorMessage is not None:
+        return "Change " + change["id"] + " failed. Error: " + errorMessage
+    return ""
 
+'''
+Helper to create dictionaries for quick access
+'''
 def listToDict(l):
     d = collections.OrderedDict()
     for el in l:
