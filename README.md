@@ -21,7 +21,7 @@ There are a couple ways I thought about handling the exceptions in this applicat
 
 I chose to implement the second method since the information provided is more useful for the user. The benefits of this method is that all errors are shown in a single run of the application. This way, the user can save time by fixing all the errors before running it again. The downside to this method is that some errors may occur because a previous change failed. For example, if a playlist failed to add and a song is trying to add to that playlist, it will fail. 
 
-The first method still has its benefits. If the application stops at every error, it will never give you consequential errors that the 2nd method suffers from. The downside is that it is probably slower to debug in the general case since the user will be spending time fixing one change at a time.
+The first method still has its benefits. If the application stops at every error, it will never give you consequential errors that the second method suffers from. The downside is that it is probably slower to debug in the general case since the user will be spending time fixing one change at a time.
 
 ## Scaling the Application
 Given a large changes.json file, we could create a stream of changes so that we are not loading all the changes that are needed into memory. Since one change is being applied at a time, we only need to load the current change into memory and process that change until we reach the end of the file. If memory is not too much of a constraint, we could also load and process changes in chunks rather than one at time.
